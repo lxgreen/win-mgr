@@ -72,12 +72,12 @@
  :: practice : chunkc border::color 0xff0000ff
 
 # switch modes by cmd + r/g/b keys
- default, practice < alt - r ; dev
- dev, practice < alt - g ; default
- dev, default < alt - b ; practice
+ default, practice < ctrl + alt - r ; dev
+ dev, practice < ctrl + alt - g ; default
+ dev, default < ctrl + alt - b ; practice
 
-# in any mode, cmd+shift+r reloads the chunkwm and skhd services
-cmd + ctrl + alt - r :  brew services restart chunkwm && brew services restart skhd
+# reload the chunkwm and skhd services
+cmd + ctrl + alt - return :  brew services restart chunkwm && brew services restart skhd
 
 # application specific bindings
 #

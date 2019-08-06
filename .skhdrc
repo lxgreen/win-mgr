@@ -72,9 +72,9 @@
  :: practice : chunkc border::color 0xff0000ff
 
 # switch modes by cmd + r/g/b keys
- default, practice < cmd - r ; dev
- dev, practice < cmd - g ; default
- dev, default < cmd - b ; practice
+ default, practice < alt - r ; dev
+ dev, practice < alt - g ; default
+ dev, default < alt - b ; practice
 
 # in any mode, cmd+shift+r reloads the chunkwm and skhd services
 cmd + ctrl + alt - r :  brew services restart chunkwm && brew services restart skhd
@@ -226,16 +226,16 @@ ctrl + alt - k : chunkc tiling::window --use-insertion-point north
 ctrl + alt - l : chunkc tiling::window --use-insertion-point east
 
 # rotate tree
-alt - r : chunkc tiling::desktop --rotate 90
+# alt - r : chunkc tiling::desktop --rotate 90
 
 # mirror tree y-axis
-alt - y : chunkc tiling::desktop --mirror vertical
+# alt - y : chunkc tiling::desktop --mirror vertical
 
 # mirror tree x-axis
-alt - x : chunkc tiling::desktop --mirror horizontal
+# alt - x : chunkc tiling::desktop --mirror horizontal
 
 # toggle desktop offset
-alt - a : chunkc tiling::desktop --toggle offset
+# alt - a : chunkc tiling::desktop --toggle offset
 
 # toggle window fullscreen
 alt - f : chunkc tiling::window --toggle fullscreen

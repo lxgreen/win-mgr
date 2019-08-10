@@ -16,14 +16,24 @@ chunkwm based window manager setup
 
 ### focusing monitors `ctrl + alt + number`
 
+#### focus next/previous monitor `ctrl + alt + z`, `ctrl + alt + c`
+
 ### moving windows across monitors `ctrl + cmd + number`
+
+#### move to next/previous monitor `ctrl + cmd + z`, `ctrl + cmd + c`
 
 ### toggle fullscreen `alt + f`
 
+#### toggle native fullsceren `alt + shift + f`
+
+### toggle zoom `alt + d`
+
 ### toggle horizontal/vertical split `alt + e`
 
-### toggle float `alt + t`
+### toggle floating `alt + t`
 
 ### toggle stickiness `alt + s`
 
 ### toggle picture-in-picture `alt + p`
+
+### 

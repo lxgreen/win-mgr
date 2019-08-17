@@ -1,5 +1,3 @@
-dev, default, practice < cmd - escape : /Applications/Kitty.app/Contents/MacOS/kitty -1 -d ~
-
 dev < cmd + shift - return :  open -n /Applications/Firefox\ Developer\ Edition.app\
                               && code ~/rich-content\
                               && /Applications/Kitty.app/Contents/MacOS/kitty -1 --instance-group dev -d ~/rich-content\

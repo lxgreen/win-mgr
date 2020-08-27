@@ -1,260 +1,168 @@
-#  NOTE(koekeishiya): A list of all built-in modifier and literal keywords can
-#                     be found at https://github.com/koekeishiya/skhd/issues/1
-#
-#                     A hotkey is written according to the following rules:
-#
-#                       hotkey       = <mode> '<' <action> | <action>
-#
-#                       mode         = 'name of mode' | <mode> ',' <mode>
-#
-#                       action       = <keysym> '[' <proc_map_lst> ']' | <keysym> '->' '[' <proc_map_lst> ']'
-#                                      <keysym> ':' <command>          | <keysym> '->' ':' <command>
-#                                      <keysym> ';' <mode>             | <keysym> '->' ';' <mode>
-#
-#                       keysym       = <mod> '-' <key> | <key>
-#
-#                       mod          = 'modifier keyword' | <mod> '+' <mod>
-#
-#                       key          = <literal> | <keycode>
-#
-#                       literal      = 'single letter or built-in keyword'
-#
-#                       keycode      = 'apple keyboard kVK_<Key> values (0x3C)'
-#
-#                       proc_map_lst = * <proc_map>
-#
-#                       proc_map     = <string> ':' <command> | <string>     '~' |
-#                                      '*'      ':' <command> | '*'          '~'
-#
-#                       string       = '"' 'sequence of characters' '"'
-#
-#                       command      = command is executed through '$SHELL -c' and
-#                                      follows valid shell syntax. if the $SHELL environment
-#                                      variable is not set, it will default to '/bin/bash'.
-#                                      when bash is used, the ';' delimeter can be specified
-#                                      to chain commands.
-#
-#                                      to allow a command to extend into multiple lines,
-#                                      prepend '\' at the end of the previous line.
-#
-#                                      an EOL character signifies the end of the bind.
-#
-#                       ->           = keypress is not consumed by skhd
-#
-#                       *            = matches every application not specified in <proc_map_lst>
-#
-#                       ~            = application is unbound and keypress is forwarded per usual, when specified in a <proc_map>
-#
-#  NOTE(koekeishiya): A mode is declared according to the following rules:
-#
-#                       mode_decl = '::' <name> '@' ':' <command> | '::' <name> ':' <command> |
-#                                   '::' <name> '@'               | '::' <name>
-#
-#                       name      = desired name for this mode,
-#
-#                       @         = capture keypresses regardless of being bound to an action
-#
-#                       command   = command is executed through '$SHELL -c' and
-#                                   follows valid shell syntax. if the $SHELL environment
-#                                   variable is not set, it will default to '/bin/bash'.
-#                                   when bash is used, the ';' delimeter can be specified
-#                                   to chain commands.
-#
-#                                   to allow a command to extend into multiple lines,
-#                                   prepend '\' at the end of the previous line.
-#
-#                                   an EOL character signifies the end of the bind.
+# ################################################################ #
+# THE FOLLOWING IS AN EXPLANATION OF THE GRAMMAR THAT SKHD PARSES. #
+# FOR SIMPLE EXAMPLE MAPPINGS LOOK FURTHER DOWN THIS FILE..        #
+# ################################################################ #
 
-# Modes: default, dev, practice
-# window border indicates the current mode
- :: default : chunkc border::color 0xff00ff00
- :: dev : chunkc border::color 0xffff0000
- :: practice : chunkc border::color 0xff0000ff
-
-# switch modes by cmd + r/g/b keys
- default, practice < ctrl + alt - r ; dev
- dev, practice < ctrl + alt - g ; default
- dev, default < ctrl + alt - b ; practice
-
-# reload the chunkwm and skhd services
-cmd + ctrl + alt - r :  brew services restart chunkwm && brew services restart skhd
-
-# application specific bindings
+# A list of all built-in modifier and literal keywords can
+# be found at https://github.com/koekeishiya/skhd/issues/1
 #
-# cmd - n [
-#     "kitty"       : echo "hello kitty"
-#     *             : echo "hello everyone"
-#     "qutebrowser" : echo "hello qutebrowser"
-#     "terminal"    ~
-#     "finder"      : false
-# ]
-
-# specify a file that should be included as an additional config-file.
-# treated as an absolutepath if the filename begins with '/' otherwise
-# the file is relative to the path of the config-file it was loaded from.
+# A hotkey is written according to the following rules:
 #
-.load ".skhdrc_apps_binding"
+#   hotkey       = <mode> '<' <action> | <action>
+#
+#   mode         = 'name of mode' | <mode> ',' <mode>
+#
+#   action       = <keysym> '[' <proc_map_lst> ']' | <keysym> '->' '[' <proc_map_lst> ']'
+#                  <keysym> ':' <command>          | <keysym> '->' ':' <command>
+#                  <keysym> ';' <mode>             | <keysym> '->' ';' <mode>
+#
+#   keysym       = <mod> '-' <key> | <key>
+#
+#   mod          = 'modifier keyword' | <mod> '+' <mod>
+#
+#   key          = <literal> | <keycode>
+#
+#   literal      = 'single letter or built-in keyword'
+#
+#   keycode      = 'apple keyboard kVK_<Key> values (0x3C)'
+#
+#   proc_map_lst = * <proc_map>
+#
+#   proc_map     = <string> ':' <command> | <string>     '~' |
+#                  '*'      ':' <command> | '*'          '~'
+#
+#   string       = '"' 'sequence of characters' '"'
+#
+#   command      = command is executed through '$SHELL -c' and
+#                  follows valid shell syntax. if the $SHELL environment
+#                  variable is not set, it will default to '/bin/bash'.
+#                  when bash is used, the ';' delimeter can be specified
+#                  to chain commands.
+#
+#                  to allow a command to extend into multiple lines,
+#                  prepend '\' at the end of the previous line.
+#
+#                  an EOL character signifies the end of the bind.
+#
+#   ->           = keypress is not consumed by skhd
+#
+#   *            = matches every application not specified in <proc_map_lst>
+#
+#   ~            = application is unbound and keypress is forwarded per usual, when specified in a <proc_map>
+#
+# A mode is declared according to the following rules:
+#
+#   mode_decl = '::' <name> '@' ':' <command> | '::' <name> ':' <command> |
+#               '::' <name> '@'               | '::' <name>
+#
+#   name      = desired name for this mode,
+#
+#   @         = capture keypresses regardless of being bound to an action
+#
+#   command   = command is executed through '$SHELL -c' and
+#               follows valid shell syntax. if the $SHELL environment
+#               variable is not set, it will default to '/bin/bash'.
+#               when bash is used, the ';' delimeter can be specified
+#               to chain commands.
+#
+#               to allow a command to extend into multiple lines,
+#               prepend '\' at the end of the previous line.
+#
+#               an EOL character signifies the end of the bind.
 
-# prevent skhd from monitoring events for specific applications.
-# .blacklist ["Code"]
+# ############################################################### #
+# THE FOLLOWING SECTION CONTAIN SIMPLE MAPPINGS DEMONSTRATING HOW #
+# TO INTERACT WITH THE YABAI WM. THESE ARE SUPPOSED TO BE USED AS #
+# A REFERENCE ONLY, WHEN MAKING YOUR OWN CONFIGURATION..          #
+# ############################################################### #
 
-# close focused window
-dev, default, practice < alt - w : chunkc tiling::window --close
+# close window
+alt - w : yabai -m window --close
 
 # focus window
-dev, default, practice < alt - left : chunkc tiling::window --focus west
-dev, default, practice < alt - down : chunkc tiling::window --focus south
-dev, default, practice < alt - up : chunkc tiling::window --focus north
-dev, default, practice < alt - right : chunkc tiling::window --focus east
+alt - left : yabai -m window --focus west
+alt - right : yabai -m window --focus east
+alt - up : yabai -m window --focus north
+alt - down : yabai -m window --focus south
 
-dev, default, practice < cmd - down : chunkc tiling::window --focus prev
-dev, default, practice < cmd - up : chunkc tiling::window --focus next
+# swap managed window
+shift + alt - left : yabai -m window --swap west
+shift + alt - right : yabai -m window --swap east
+shift + alt - up : yabai -m window --swap north
+shift + alt - down : yabai -m window --swap south
 
-# equalize size of windows
-dev, default, practice < shift + alt - 0 : chunkc tiling::desktop --equalize
+# move managed window
+shift + cmd - left : yabai -m window --warp west
+shift + cmd - right : yabai -m window --warp east
+shift + cmd - up : yabai -m window --warp north
+shift + cmd - down : yabai -m window --warp south
 
-# swap window
-dev, default, practice < shift + alt - left : chunkc tiling::window --swap west
-dev, default, practice < shift + alt - down : chunkc tiling::window --swap south
-dev, default, practice < shift + alt - up : chunkc tiling::window --swap north
-dev, default, practice < shift + alt - right : chunkc tiling::window --swap east
-
-# move window
-dev, default, practice < shift + cmd - left : chunkc tiling::window --warp west
-dev, default, practice < shift + cmd - down : chunkc tiling::window --warp south
-dev, default, practice < shift + cmd - up : chunkc tiling::window --warp north
-dev, default, practice < shift + cmd - right : chunkc tiling::window --warp east
+# balance size of windows
+shift + alt - 0 : yabai -m space --balance
 
 # make floating window fill screen
-# shift + alt - up     : chunkc tiling::window --grid-layout 1:1:0:0:1:1
+# shift + alt - up     : yabai -m window --grid 1:1:0:0:1:1
 
-# # make floating window fill left-half of screen
-# shift + alt - left   : chunkc tiling::window --grid-layout 1:2:0:0:1:1
+# make floating window fill left-half of screen
+# shift + alt - left   : yabai -m window --grid 1:2:0:0:1:1
 
-# # make floating window fill right-half of screen
-# shift + alt - right  : chunkc tiling::window --grid-layout 1:2:1:0:1:1
-
-# create desktop, move window and follow focus
-# shift + cmd - n : chunkc tiling::desktop --create;\
-#                   id=$(chunkc tiling::query --desktops-for-monitor $(chunkc tiling::query --monitor-for-desktop $(chunkc tiling::query --desktop id)));\
-#                   chunkc tiling::window --send-to-desktop $(echo ${id##* });\
-#                   chunkc tiling::desktop --focus $(echo ${id##* })
-
-# # create desktop and follow focus
-# cmd + alt - n : chunkc tiling::desktop --create;\
-#                 id=$(chunkc tiling::query --desktops-for-monitor $(chunkc tiling::query --monitor-for-desktop $(chunkc tiling::query --desktop id)));\
-#                 chunkc tiling::desktop --focus $(echo ${id##* })
-# # destroy desktop
-# cmd + alt - w : chunkc tiling::desktop --annihilate
+# create desktop, move window and follow focus - uses jq for parsing json (brew install jq)
+# shift + cmd - n : yabai -m space --create && \
+#                   index="$(yabai -m query --spaces --display | jq 'map(select(."native-fullscreen" == 0))[-1].index')" && \
+#                   yabai -m window --space "${index}" && \
+#                   yabai -m space --focus "${index}"
 
 # fast focus desktop
-# cmd + alt - x : chunkc tiling::desktop --focus $(chunkc get _last_active_desktop)
-# cmd + alt - z : chunkc tiling::desktop --focus prev
-# cmd + alt - c : chunkc tiling::desktop --focus next
-# cmd + alt - 1 : chunkc tiling::desktop --focus 1
-# cmd + alt - 2 : chunkc tiling::desktop --focus 2
-# cmd + alt - 3 : chunkc tiling::desktop --focus 3
-# cmd + alt - 4 : chunkc tiling::desktop --focus 4
-# cmd + alt - 5 : chunkc tiling::desktop --focus 5
-# cmd + alt - 6 : chunkc tiling::desktop --focus 6
-# cmd + alt - 7 : chunkc tiling::desktop --focus 7
-# cmd + alt - 8 : chunkc tiling::desktop --focus 8
-# cmd + alt - 9 : chunkc tiling::desktop --focus 9
-# cmd + alt - 0 : chunkc tiling::desktop --focus 10
+# cmd + alt - x : yabai -m space --focus recent
+# cmd + alt - 1 : yabai -m space --focus 1
 
 # send window to desktop and follow focus
-# shift + cmd - x : chunkc tiling::window --send-to-desktop $(chunkc get _last_active_desktop); chunkc tiling::desktop --focus $(chunkc get _last_active_desktop)
-# shift + cmd - z : chunkc tiling::window --send-to-desktop prev; chunkc tiling::desktop --focus prev
-# shift + cmd - c : chunkc tiling::window --send-to-desktop next; chunkc tiling::desktop --focus next
-# shift + cmd - 1 : chunkc tiling::window --send-to-desktop 1; chunkc tiling::desktop --focus 1
-# shift + cmd - 2 : chunkc tiling::window --send-to-desktop 2; chunkc tiling::desktop --focus 2
-# shift + cmd - 3 : chunkc tiling::window --send-to-desktop 3; chunkc tiling::desktop --focus 3
-# shift + cmd - 4 : chunkc tiling::window --send-to-desktop 4; chunkc tiling::desktop --focus 4
-# shift + cmd - 5 : chunkc tiling::window --send-to-desktop 5; chunkc tiling::desktop --focus 5
-# shift + cmd - 6 : chunkc tiling::window --send-to-desktop 6; chunkc tiling::desktop --focus 6
-# shift + cmd - 7 : chunkc tiling::window --send-to-desktop 7; chunkc tiling::desktop --focus 7
-# shift + cmd - 8 : chunkc tiling::window --send-to-desktop 8; chunkc tiling::desktop --focus 8
-# shift + cmd - 9 : chunkc tiling::window --send-to-desktop 9; chunkc tiling::desktop --focus 9
-# shift + cmd - 0 : chunkc tiling::window --send-to-desktop 10; chunkc tiling::desktop --focus 10
+# shift + cmd - z : yabai -m window --space next; yabai -m space --focus next
+# shift + cmd - 2 : yabai -m window --space  2; yabai -m space --focus 2
 
 # focus monitor
-dev, default, practice < ctrl + alt - up  : chunkc tiling::monitor -f prev
-dev, default, practice < ctrl + alt - down  : chunkc tiling::monitor -f next
-dev, default, practice < ctrl + alt - 1  : chunkc tiling::monitor -f 1
-dev, default, practice < ctrl + alt - 2  : chunkc tiling::monitor -f 2
-dev, default, practice < ctrl + alt - 3  : chunkc tiling::monitor -f 3
+ctrl + alt - up  : yabai -m display --focus prev
+ctrl + alt - down  : yabai -m display --focus next
+ctrl + alt - 1  : yabai -m display --focus 1
+ctrl + alt - 2  : yabai -m display --focus 2
+ctrl + alt - 3  : yabai -m display --focus 3
 
 # send window to monitor and follow focus
-dev, default, practice < ctrl + cmd - up  : chunkc tiling::window --send-to-monitor prev; chunkc tiling::monitor -f prev
-dev, default, practice < ctrl + cmd - down  : chunkc tiling::window --send-to-monitor next; chunkc tiling::monitor -f next
-dev, default, practice < ctrl + cmd - 1  : chunkc tiling::window --send-to-monitor 1; chunkc tiling::monitor -f 1
-dev, default, practice < ctrl + cmd - 2  : chunkc tiling::window --send-to-monitor 2; chunkc tiling::monitor -f 2
-dev, default, practice < ctrl + cmd - 3  : chunkc tiling::window --send-to-monitor 3; chunkc tiling::monitor -f 3
+ctrl + cmd - down  : yabai -m window --display next; yabai -m display --focus next
+ctrl + cmd - up  : yabai -m window --display prev; yabai -m display --focus prev
+ctrl + cmd - 1  : yabai -m window --display 1; yabai -m display --focus 1
+ctrl + cmd - 2  : yabai -m window --display 2; yabai -m display --focus 2
+ctrl + cmd - 3  : yabai -m window --display 3; yabai -m display --focus 3
 
-# increase region size
-dev, default, practice < shift + alt - a : chunkc tiling::window --use-temporary-ratio 0.1 --adjust-window-edge west
-dev, default, practice < shift + alt - s : chunkc tiling::window --use-temporary-ratio 0.1 --adjust-window-edge south
-dev, default, practice < shift + alt - w : chunkc tiling::window --use-temporary-ratio 0.1 --adjust-window-edge north
-dev, default, practice < shift + alt - d : chunkc tiling::window --use-temporary-ratio 0.1 --adjust-window-edge east
+# move floating window
+# shift + ctrl - a : yabai -m window --move rel:-20:0
+# shift + ctrl - s : yabai -m window --move rel:0:20
 
-# decrease region size
-dev, default, practice < shift + cmd - a : chunkc tiling::window --use-temporary-ratio -0.1 --adjust-window-edge west
-dev, default, practice < shift + cmd - s : chunkc tiling::window --use-temporary-ratio -0.1 --adjust-window-edge south
-dev, default, practice < shift + cmd - w : chunkc tiling::window --use-temporary-ratio -0.1 --adjust-window-edge north
-dev, default, practice < shift + cmd - d : chunkc tiling::window --use-temporary-ratio -0.1 --adjust-window-edge east
+# increase window size
+shift + ctrl - left : yabai -m window --resize left:-20:0
+shift + ctrl - right : yabai -m window --resize right:20:0
+shift + ctrl - up : yabai -m window --resize top:0:-20
+shift + ctrl - down : yabai -m window --resize bottom:0:20
 
-# set insertion point for focused container
-dev, default, practice < ctrl + alt - f : chunkc tiling::window --use-insertion-point cancel
-dev, default, practice < ctrl + alt - h : chunkc tiling::window --use-insertion-point west
-dev, default, practice < ctrl + alt - j : chunkc tiling::window --use-insertion-point south
-dev, default, practice < ctrl + alt - k : chunkc tiling::window --use-insertion-point north
-dev, default, practice < ctrl + alt - l : chunkc tiling::window --use-insertion-point east
+# decrease window size
+shift + cmd - s : yabai -m window --resize bottom:0:-20
+shift + cmd - w : yabai -m window --resize top:0:20
 
-# rotate tree
-dev, default, practice < alt - r : chunkc tiling::desktop --rotate 90
+# set insertion point in focused container
+# ctrl + alt - h : yabai -m window --insert west
 
-# mirror tree y-axis
-dev, default, practice < alt - y : chunkc tiling::desktop --mirror vertical
-
-# mirror tree x-axis
-dev, default, practice < alt - x : chunkc tiling::desktop --mirror horizontal
-
-# toggle desktop offset
-# alt - a : chunkc tiling::desktop --toggle offset
-
-# toggle window fullscreen
-dev, default, practice < alt - f : chunkc tiling::window --toggle fullscreen
-
-# toggle window native fullscreen
-dev, default, practice < shift + alt - f : chunkc tiling::window --toggle native-fullscreen
-
-# toggle window parent zoom
-dev, default, practice < alt - d : chunkc tiling::window --toggle parent
+# toggle window zoom
+alt - d : yabai -m window --toggle zoom-parent
+alt - f : yabai -m window --toggle zoom-fullscreen
 
 # toggle window split type
-dev, default, practice < alt - e : chunkc tiling::window --toggle split
-
-# toggle window fade
-dev, default, practice < alt - q : chunkc tiling::window --toggle fade
+alt - e : yabai -m window --toggle split
 
 # float / unfloat window and center on screen
-dev, default, practice < alt - t : chunkc tiling::window --toggle float;\
-          chunkc tiling::window --grid-layout 4:4:1:1:2:2
+alt - t : yabai -m window --toggle float;\
+          yabai -m window --grid 4:4:1:1:2:2
 
-# toggle sticky
-dev, default, practice < alt - s : chunkc tiling::window --toggle sticky
-
-# toggle sticky, float and resize to picture-in-picture size
-dev, default, practice < alt - p : chunkc tiling::window --toggle sticky;\
-          chunkc tiling::window --grid-layout 5:5:4:0:1:1
-
-# float next window to be tiled
-dev, default, practice < shift + alt - t : chunkc set window_float_next 1
-
-# change layout of desktop
-dev, default, practice < ctrl + alt - a : chunkc tiling::desktop --layout bsp
-dev, default, practice < ctrl + alt - s : chunkc tiling::desktop --layout monocle
-dev, default, practice < ctrl + alt - d : chunkc tiling::desktop --layout float
-
-dev, default, practice < ctrl + alt - w : chunkc tiling::desktop --deserialize ~/.chunkwm_layouts/dev_1
-
+# toggle sticky(+float), topmost, picture-in-picture
+alt - p : yabai -m window --toggle sticky;\
+          yabai -m window --toggle topmost;\
+          yabai -m window --toggle pip

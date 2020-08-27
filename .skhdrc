@@ -166,3 +166,5 @@ alt - t : yabai -m window --toggle float;\
 alt - p : yabai -m window --toggle sticky;\
           yabai -m window --toggle topmost;\
           yabai -m window --toggle pip
+# restart
+ctrl + cmd + alt - r : brew services restart yabai && brew services restart skhd 

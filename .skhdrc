@@ -98,7 +98,7 @@ shift + cmd - up : yabai -m window --warp north
 shift + cmd - down : yabai -m window --warp south
 
 # balance size of windows
-shift + alt - 0 : yabai -m space --balance
+shift + ctrl - 0 : yabai -m space --balance
 
 # make floating window fill screen
 # shift + alt - up     : yabai -m window --grid 1:1:0:0:1:1

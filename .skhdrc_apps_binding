@@ -1,3 +1,0 @@
-dev < cmd + shift - return :  open -n /Applications/Firefox\ Developer\ Edition.app\
-                              && code ~/rich-content\
-                              && open -n /Applications/iTerm.app
